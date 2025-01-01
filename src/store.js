@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { addEdge, applyNodeChanges, applyEdgeChanges } from "reactflow";
+import { EDGE_STYLES } from "./constants/constants";
 
 export const useStore = create((set, get) => ({
   nodes: [],
@@ -35,15 +36,7 @@ export const useStore = create((set, get) => ({
       edges: addEdge(
         {
           ...connection,
-          type: "smoothstep",
-          animated: true,
-          style: {
-            stroke: "#6466E9",
-            strokeWidth: 2,
-            strokeDasharray: "5, 5",
-            strokeLinecap: "round",
-            strokeLinejoin: "round",
-          },
+          ...EDGE_STYLES.DEFAULT,
         },
         get().edges
       ),

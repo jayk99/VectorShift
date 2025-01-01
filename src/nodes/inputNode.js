@@ -1,39 +1,46 @@
 import { useState } from "react";
-import { BaseNode } from "../components/BaseNode";
+import { BaseNode, createNode } from "../components/BaseNode";
 import { NodeField, NodeSelect } from "../components/NodeComponents";
 import { MdInput } from "react-icons/md";
+import { NODE_DIMENSIONS, IO_TYPES } from "../constants/constants";
+
+const INPUT_NODE_CONFIG = createNode("input", {
+  width: NODE_DIMENSIONS.DEFAULT,
+  outputs: [{ id: "value", label: "value", position: 128 }],
+  showSettings: false,
+});
 
 export const InputNode = ({ id, data }) => {
-  const [currName, setCurrName] = useState(data?.inputName || "project_id");
-  const [inputType, setInputType] = useState(data.inputType || "Text");
+  const [state, setState] = useState({
+    inputName: data?.inputName || "project_id",
+    inputType: data?.inputType || "Text",
+  });
+
+  const handleChange = (field) => (e) => {
+    setState((prev) => ({ ...prev, [field]: e.target.value }));
+  };
 
   return (
-    <BaseNode id={id} title="Input" icon={MdInput} outputs={[{ id: "value" }]}>
-      <InputNodeContent
-        name={currName}
-        type={inputType}
-        onNameChange={setCurrName}
-        onTypeChange={setInputType}
-      />
+    <BaseNode
+      id={id}
+      title="Input"
+      icon={MdInput}
+      {...INPUT_NODE_CONFIG}
+      data={data}
+    >
+      <div className="flex flex-col gap-3">
+        <NodeField
+          label="Name"
+          value={state.inputName}
+          onChange={handleChange("inputName")}
+        />
+        <NodeSelect
+          label="Type"
+          value={state.inputType}
+          onChange={handleChange("inputType")}
+          options={IO_TYPES}
+        />
+      </div>
     </BaseNode>
   );
 };
-
-const InputNodeContent = ({ name, type, onNameChange, onTypeChange }) => (
-  <div className="flex flex-col gap-3">
-    <NodeField
-      label="Name"
-      value={name}
-      onChange={(e) => onNameChange(e.target.value)}
-    />
-    <NodeSelect
-      label="Type"
-      value={type}
-      onChange={(e) => onTypeChange(e.target.value)}
-      options={[
-        { value: "Text", label: "Text" },
-        { value: "File", label: "File" },
-      ]}
-    />
-  </div>
-);

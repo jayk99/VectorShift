@@ -1,61 +1,52 @@
 import { useState, useCallback } from "react";
-import { BaseNode } from "../components/BaseNode";
+import { BaseNode, createNode } from "../components/BaseNode";
 import { NodeField, NodeSelect } from "../components/NodeComponents";
 import { MdCrop } from "react-icons/md";
+import { MODEL_OPTIONS, NODE_DIMENSIONS } from "../constants/constants";
+import { motion, AnimatePresence } from "framer-motion";
 
-export const LLMNode = ({ id, data }) => {
-  const [system, setSystem] = useState(data?.system || "");
-  const [prompt, setPrompt] = useState(data?.prompt || "");
-  const [model, setModel] = useState(data?.model || "gpt-3.5-turbo");
-  const [usePersonalAPI, setUsePersonalAPI] = useState(
-    data?.usePersonalAPI || false
-  );
-  const [apiKey, setApiKey] = useState(data?.apiKey || "");
-
-  const inputs = [
+// Standardized node configuration
+const LLM_NODE_CONFIG = createNode("llm", {
+  width: NODE_DIMENSIONS.EXTRA_WIDE,
+  inputs: [
     { id: "system", label: "system", position: 85 },
     { id: "prompt", label: "prompt", position: 170 },
-  ];
+  ],
+  outputs: [{ id: "response", label: "response", position: 128 }],
+  showSettings: true,
+});
 
-  const outputs = [{ id: "response", label: "response", position: 128 }];
+export const LLMNode = ({ id, data }) => {
+  const [state, setState] = useState({
+    system: data?.system || "",
+    prompt: data?.prompt || "",
+    model: data?.model || "gpt-3.5-turbo",
+    usePersonalAPI: data?.usePersonalAPI || false,
+    apiKey: data?.apiKey || "",
+  });
 
-  const modelOptions = [
-    { value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" },
-    { value: "gpt-4o", label: "gpt-4o" },
-  ];
-
-  const handleSystemChange = useCallback((e) => {
-    setSystem(e.target.value);
-  }, []);
-
-  const handlePromptChange = useCallback((e) => {
-    setPrompt(e.target.value);
-  }, []);
-
-  const handleModelChange = useCallback((e) => {
-    setModel(e.target.value);
-  }, []);
-
-  const handleApiKeyChange = useCallback((e) => {
-    setApiKey(e.target.value);
-  }, []);
+  const handleChange = useCallback(
+    (field) => (e) => {
+      const value =
+        e.target.type === "checkbox" ? e.target.checked : e.target.value;
+      setState((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   return (
     <BaseNode
       id={id}
       title="OpenAI LLM"
       icon={MdCrop}
-      inputs={inputs}
-      outputs={outputs}
-      width="300px"
-      showSettings={true}
+      {...LLM_NODE_CONFIG}
       data={data}
     >
       <div className="flex flex-col gap-4 px-1">
         <NodeField
           label="System"
-          value={system}
-          onChange={handleSystemChange}
+          value={state.system}
+          onChange={handleChange("system")}
           containerClassName="mb-1"
           minHeight={24}
         />
@@ -66,8 +57,8 @@ export const LLMNode = ({ id, data }) => {
 
         <NodeField
           label="Prompt"
-          value={prompt}
-          onChange={handlePromptChange}
+          value={state.prompt}
+          onChange={handleChange("prompt")}
           multiline
           minHeight={24}
           autoExpand
@@ -75,36 +66,59 @@ export const LLMNode = ({ id, data }) => {
 
         <NodeSelect
           label="Model"
-          value={model}
-          onChange={handleModelChange}
-          options={modelOptions}
+          value={state.model}
+          onChange={handleChange("model")}
+          options={MODEL_OPTIONS}
         />
 
         <div className="flex flex-col gap-2">
           <div className="flex justify-center items-center gap-2">
             <input
               type="checkbox"
-              checked={usePersonalAPI}
-              onChange={(e) => setUsePersonalAPI(e.target.checked)}
+              checked={state.usePersonalAPI}
+              onChange={handleChange("usePersonalAPI")}
               className="w-4 h-4 border-gray-300 rounded text-[#6466E9] focus:ring-[#6466E9] checked:bg-[#6466E9] checked:hover:bg-[#6466E9]"
             />
             <span className="text-sm text-gray-600">Use Personal API Key</span>
           </div>
 
-          {usePersonalAPI && (
-            <>
-              <span className="text-xs text-[#6466E9] text-center">
-                Your API key will be securely stored
-              </span>
-              <NodeField
-                label="API Key"
-                value={apiKey}
-                onChange={handleApiKeyChange}
-                containerClassName="mt-1"
-                minHeight={24}
-              />
-            </>
-          )}
+          <AnimatePresence initial={false}>
+            {state.usePersonalAPI && (
+              <motion.div
+                initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                animate={{
+                  height: "auto",
+                  opacity: 1,
+                  marginTop: 8,
+                  transition: {
+                    height: { duration: 0.3, ease: "easeOut" },
+                    opacity: { duration: 0.2, ease: "easeOut" },
+                  },
+                }}
+                exit={{
+                  height: 0,
+                  opacity: 0,
+                  marginTop: 0,
+                  transition: {
+                    height: { duration: 0.3, ease: "easeIn" },
+                    opacity: { duration: 0.2, ease: "easeIn" },
+                  },
+                }}
+                className="overflow-hidden"
+              >
+                <span className="text-xs text-[#6466E9] text-center block mb-2">
+                  Your API key will be securely stored
+                </span>
+                <NodeField
+                  label="API Key"
+                  value={state.apiKey}
+                  onChange={handleChange("apiKey")}
+                  containerClassName="mt-1"
+                  minHeight={24}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </BaseNode>

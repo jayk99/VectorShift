@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { FIELD_HEIGHTS, VARIABLE_REGEX } from "../constants/constants";
 
 export const NodeField = ({
   label,
@@ -6,7 +7,7 @@ export const NodeField = ({
   onChange,
   onVariableDetected,
   multiline = true,
-  minHeight = 24,
+  minHeight = FIELD_HEIGHTS.DEFAULT,
   autoExpand = true,
   containerClassName = "",
   nodeId,
@@ -19,8 +20,7 @@ export const NodeField = ({
 
     // Immediate variable detection on every change
     if (onVariableDetected) {
-      const variableRegex = /{{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*}}/g;
-      const matches = [...newValue.matchAll(variableRegex)];
+      const matches = [...newValue.matchAll(VARIABLE_REGEX)];
 
       const variables = matches.map((match) => ({
         id: match[1].trim(),

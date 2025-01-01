@@ -3,6 +3,18 @@ import { MdOutlineInfo, MdSettings } from "react-icons/md";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import React, { useEffect, useState } from "react";
 import { useStore } from "../store";
+import { NODE_DIMENSIONS } from "../constants/constants";
+
+// Add common node configuration
+const createNodeConfig = (config) => ({
+  width: NODE_DIMENSIONS.DEFAULT,
+  className: "",
+  showSettings: false,
+  inputs: [],
+  outputs: [],
+  dynamicInputs: [],
+  ...config,
+});
 
 export const BaseNode = ({
   id,
@@ -11,19 +23,31 @@ export const BaseNode = ({
   children,
   inputs = [],
   outputs = [],
-  width = "220px",
+  width = NODE_DIMENSIONS.DEFAULT,
   className = "",
   showSettings = false,
   dynamicInputs = [],
+  onSettingsClick,
+  data,
 }) => {
-  // Get deleteNode function from store
   const deleteNode = useStore((state) => state.deleteNode);
+  const updateNodeData = useStore((state) => state.updateNodeField);
+
+  // Common node state management
+  const handleDataChange = (field, value) => {
+    updateNodeData(id, field, value);
+  };
 
   // Handle node deletion
   const handleDelete = (event) => {
     event.preventDefault();
     event.stopPropagation();
     deleteNode(id);
+  };
+
+  // Enhanced handle positioning logic
+  const getHandlePosition = (index, total) => {
+    return ((index + 1) * 100) / (total + 1);
   };
 
   // Ensure dynamic handles have proper IDs and are immediately available
@@ -129,4 +153,12 @@ export const BaseNode = ({
       ))}
     </div>
   );
+};
+
+// Export helper for consistent node creation
+export const createNode = (type, config) => {
+  return {
+    type,
+    ...createNodeConfig(config),
+  };
 };

@@ -10,29 +10,34 @@ import { InputNode } from "./nodes/inputNode";
 import { LLMNode } from "./nodes/llmNode";
 import { OutputNode } from "./nodes/outputNode";
 import { TextNode } from "./nodes/textNode";
-import {
-  DatabaseNode,
-  APINode,
-  FilterNode,
-  TransformNode,
-  WebhookNode,
-} from "./nodes/newNodes";
+
 import { VecStoreNode } from "./nodes/VecStoreNode";
+import {
+  SlackNode,
+  GmailNode,
+  NotionNode,
+  DiscordNode,
+} from "./nodes/newNodes";
 
 import "reactflow/dist/style.css";
 
 const gridSize = 20;
-const proOptions = { hideAttribution: true };
+const proOptions = {
+  hideAttribution: true,
+  // Enable touch device interactions
+  enablePanAndZoom: true,
+  enableTouchZoom: true,
+};
+
 const nodeTypes = {
   customInput: InputNode,
   llm: LLMNode,
   customOutput: OutputNode,
   text: TextNode,
-  database: DatabaseNode,
-  api: APINode,
-  filter: FilterNode,
-  transform: TransformNode,
-  webhook: WebhookNode,
+  slack: SlackNode,
+  gmail: GmailNode,
+  notion: NotionNode,
+  discord: DiscordNode,
   vecStore: VecStoreNode,
 };
 
@@ -75,7 +80,6 @@ export const PipelineUI = () => {
         );
         const type = appData?.nodeType;
 
-        // check if the dropped element is valid
         if (typeof type === "undefined" || !type) {
           return;
         }
@@ -105,27 +109,31 @@ export const PipelineUI = () => {
   }, []);
 
   return (
-    <>
-      <div ref={reactFlowWrapper} style={{ width: "100wv", height: "70vh" }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onInit={setReactFlowInstance}
-          nodeTypes={nodeTypes}
-          proOptions={proOptions}
-          snapGrid={[gridSize, gridSize]}
-          connectionLineType="smoothstep"
-        >
-          <Background color="#aaa" gap={gridSize} />
-          <Controls />
-          <MiniMap />
-        </ReactFlow>
-      </div>
-    </>
+    <div ref={reactFlowWrapper} style={{ width: "100wv", height: "70vh" }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onInit={setReactFlowInstance}
+        nodeTypes={nodeTypes}
+        proOptions={proOptions}
+        snapGrid={[gridSize, gridSize]}
+        connectionLineType="smoothstep"
+        // Mobile-specific props
+        touchZoom={true}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        panOnDrag={true}
+        defaultZoom={0.75} // Slightly zoomed out by default on mobile
+      >
+        <Background color="#aaa" gap={gridSize} />
+        <Controls showZoom={true} showFitView={true} position="bottom-right" />
+        <MiniMap />
+      </ReactFlow>
+    </div>
   );
 };
