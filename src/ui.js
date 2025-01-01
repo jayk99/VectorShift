@@ -17,6 +17,7 @@ import {
   TransformNode,
   WebhookNode,
 } from "./nodes/newNodes";
+import { VecStoreNode } from "./nodes/VecStoreNode";
 
 import "reactflow/dist/style.css";
 
@@ -32,6 +33,7 @@ const nodeTypes = {
   filter: FilterNode,
   transform: TransformNode,
   webhook: WebhookNode,
+  vecStore: VecStoreNode,
 };
 
 const selector = (state) => ({
