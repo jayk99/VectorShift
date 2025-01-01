@@ -14,13 +14,19 @@ export const TextNode = ({ id, data }) => {
   const [text, setText] = useState(data?.text || "");
   const [variables, setVariables] = useState([]);
 
-  const handleTextChange = useCallback((e) => {
-    setText(e.target.value);
-  }, []);
+  const handleTextChange = useCallback(
+    (e) => {
+      setText(e.target.value);
+    },
+    [setText]
+  );
 
-  const handleVariableDetected = useCallback((newVariables) => {
-    setVariables(newVariables);
-  }, []);
+  const handleVariableDetected = useCallback(
+    (newVariables) => {
+      setVariables(newVariables);
+    },
+    [setVariables]
+  );
 
   return (
     <BaseNode

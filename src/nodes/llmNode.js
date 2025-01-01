@@ -31,7 +31,7 @@ export const LLMNode = ({ id, data }) => {
         e.target.type === "checkbox" ? e.target.checked : e.target.value;
       setState((prev) => ({ ...prev, [field]: value }));
     },
-    []
+    [setState]
   );
 
   return (
