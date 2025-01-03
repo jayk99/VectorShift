@@ -2,17 +2,16 @@ import {
   MdInput,
   MdOutput,
   MdOutlineTextSnippet,
-  MdApi,
   MdCrop,
   MdSave,
-  MdStorage,
-  MdManageSearch,
+  MdOutlineFileDownload,
 } from "react-icons/md";
 import { FaRegFile } from "react-icons/fa";
 import { FaRegCirclePlay } from "react-icons/fa6";
 import { BiTransfer } from "react-icons/bi";
 import { BsChatRightText } from "react-icons/bs";
 import { SiSlack, SiGmail, SiNotion, SiDiscord } from "react-icons/si";
+import { RiOpenaiFill } from "react-icons/ri";
 
 // UI Constants
 export const GRID_SIZE = 20;
@@ -78,8 +77,8 @@ export const NODES_BY_CATEGORY = {
       icon: <BiTransfer className="w-5 h-5 text-gray-500" />,
     },
     {
-      type: "transformation",
-      label: "Transformation",
+      type: "transform",
+      label: "Transform",
       icon: <MdCrop className="w-5 h-5 text-gray-500" />,
     },
     {
@@ -97,19 +96,19 @@ export const NODES_BY_CATEGORY = {
     {
       type: "llm",
       label: "LLM",
-      icon: <MdApi className="w-5 h-5 text-gray-500" />,
+      icon: <RiOpenaiFill className="w-5 h-5 text-gray-500" />,
     },
   ],
   vectorDB: [
     {
       type: "vecQuery",
-      label: "Vector Query",
-      icon: <MdManageSearch className="w-5 h-5 text-gray-500" />,
+      label: "Vec Query",
+      icon: <MdCrop className="w-5 h-5 text-gray-500" />,
     },
     {
       type: "vecStore",
-      label: "Vector Store Reader",
-      icon: <MdStorage className="w-5 h-5 text-gray-500" />,
+      label: "Vec Store",
+      icon: <MdOutlineFileDownload className="w-5 h-5 text-gray-500" />,
     },
   ],
   integration: [
@@ -138,7 +137,7 @@ export const NODES_BY_CATEGORY = {
 
 // Model Options
 export const MODEL_OPTIONS = [
-  { value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" },
+  { value: "gpt-3.5 turbo", label: "gpt-3.5 turbo" },
   { value: "gpt-4o", label: "gpt-4o" },
 ];
 

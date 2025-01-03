@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { BaseNode, createNode } from "../components/BaseNode";
 import { NodeField, NodeSelect } from "../components/NodeComponents";
-import { MdCrop } from "react-icons/md";
+import { SiOpenai } from "react-icons/si";
 import { MODEL_OPTIONS, NODE_DIMENSIONS } from "../constants/constants";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -31,14 +31,14 @@ export const LLMNode = ({ id, data }) => {
         e.target.type === "checkbox" ? e.target.checked : e.target.value;
       setState((prev) => ({ ...prev, [field]: value }));
     },
-    [setState]
+    []
   );
 
   return (
     <BaseNode
       id={id}
       title="OpenAI LLM"
-      icon={MdCrop}
+      icon={SiOpenai}
       {...LLM_NODE_CONFIG}
       data={data}
     >
@@ -85,28 +85,12 @@ export const LLMNode = ({ id, data }) => {
           <AnimatePresence initial={false}>
             {state.usePersonalAPI && (
               <motion.div
-                initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                animate={{
-                  height: "auto",
-                  opacity: 1,
-                  marginTop: 8,
-                  transition: {
-                    height: { duration: 0.3, ease: "easeOut" },
-                    opacity: { duration: 0.2, ease: "easeOut" },
-                  },
-                }}
-                exit={{
-                  height: 0,
-                  opacity: 0,
-                  marginTop: 0,
-                  transition: {
-                    height: { duration: 0.3, ease: "easeIn" },
-                    opacity: { duration: 0.2, ease: "easeIn" },
-                  },
-                }}
-                className="overflow-hidden"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
-                <span className="text-xs text-[#6466E9] text-center block mb-2">
+                <span className="text-xs text-[#6466E9] text-center block">
                   Your API key will be securely stored
                 </span>
                 <NodeField

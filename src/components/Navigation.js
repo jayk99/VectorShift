@@ -116,19 +116,28 @@ export const Navigation = ({ activeCategory, setActiveCategory }) => {
           </motion.div>
 
           {/* Category Buttons */}
-          <div className="flex space-x-4 sm:space-x-6 overflow-x-auto hide-scrollbar">
+          <div className="flex space-x-4 sm:space-x-6 overflow-x-auto hide-scrollbar relative">
             {NAV_CATEGORIES.map((category) => (
-              <button
+              <motion.button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`py-1 text-sm whitespace-nowrap transition-colors flex-shrink-0 ${
+                className={`py-1 text-sm whitespace-nowrap transition-colors flex-shrink-0 relative ${
                   activeCategory === category.id
-                    ? "text-[#6466E9] border-b-2 border-[#6466E9] -mb-[1px]"
+                    ? "text-[#6466E9]"
                     : "text-gray-600 hover:text-gray-800"
                 }`}
               >
                 {category.label}
-              </button>
+                {activeCategory === category.id && (
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#6466E9]"
+                    layoutId="activeCategory"
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </motion.button>
             ))}
           </div>
         </div>
