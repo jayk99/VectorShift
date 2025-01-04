@@ -1,44 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { FIELD_HEIGHTS, VARIABLE_REGEX } from "../constants/constants";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 export const NodeField = ({
   label,
   value,
   onChange,
-  onVariableDetected,
   multiline = true,
-  minHeight = FIELD_HEIGHTS.DEFAULT,
+  minHeight = 20,
   autoExpand = true,
   containerClassName = "",
-  nodeId,
 }) => {
   const textareaRef = useRef(null);
 
-  const handleChange = (e) => {
-    const newValue = e.target.value;
-    onChange(e);
-
-    // Immediate variable detection on every change
-    if (onVariableDetected) {
-      const matches = [...newValue.matchAll(VARIABLE_REGEX)];
-
-      const variables = matches.map((match) => ({
-        id: match[1].trim(),
-        label: match[1].trim(),
-      }));
-
-      // Trigger variable detection immediately
-      onVariableDetected(variables);
-    }
-  };
-
-  // Handle textarea auto-expansion
   useEffect(() => {
     if (autoExpand && textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      const newHeight = Math.max(minHeight, textareaRef.current.scrollHeight);
-      textareaRef.current.style.height = `${newHeight}px`;
+      textareaRef.current.style.height = `${Math.max(
+        minHeight,
+        textareaRef.current.scrollHeight
+      )}px`;
     }
   }, [value, autoExpand, minHeight]);
 
@@ -49,8 +29,8 @@ export const NodeField = ({
         <textarea
           ref={textareaRef}
           value={value}
-          onChange={handleChange}
-          className="w-full text-sm focus:outline-none resize-none overflow-hidden relative z-10 bg-transparent"
+          onChange={onChange}
+          className="w-full text-sm focus:outline-none resize-none overflow-hidden bg-transparent"
           style={{
             minHeight,
             height: autoExpand ? "auto" : minHeight,
@@ -81,11 +61,6 @@ export const NodeSelect = ({ label, value, onChange, options }) => {
 
   const selectedOption = options.find((option) => option.value === value);
 
-  const handleSelect = (optionValue) => {
-    onChange({ target: { value: optionValue } });
-    setIsOpen(false);
-  };
-
   return (
     <div className="flex flex-col gap-1" ref={dropdownRef}>
       <span className="text-xs text-gray-600">{label}</span>
@@ -111,13 +86,15 @@ export const NodeSelect = ({ label, value, onChange, options }) => {
               {options.map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => handleSelect(option.value)}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors duration-150
-                    ${
-                      value === option.value
-                        ? "bg-gray-50 text-[#6466E9]"
-                        : "text-gray-800"
-                    }`}
+                  onClick={() => {
+                    onChange(option.value);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors duration-150 ${
+                    value === option.value
+                      ? "bg-gray-50 text-[#6466E9]"
+                      : "text-gray-800"
+                  }`}
                 >
                   {option.label}
                 </button>
@@ -125,6 +102,109 @@ export const NodeSelect = ({ label, value, onChange, options }) => {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+export const DynamicTextArea = ({
+  value,
+  onChange,
+  label,
+  onWidthChange,
+  onVariableDetected,
+}) => {
+  const textareaRef = useRef(null);
+  const currentWidth = useRef(200);
+
+  const handleChange = (e) => {
+    onChange(e);
+
+    if (onVariableDetected) {
+      // Detect variables without requiring line breaks
+      const matches = [
+        ...e.target.value.matchAll(/{{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*}}/g),
+      ];
+      const variables = matches.map((match) => ({
+        id: match[1].trim(),
+        label: match[1].trim(),
+      }));
+      onVariableDetected(variables);
+    }
+  };
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+
+    const textarea = textareaRef.current;
+    const computedStyle = window.getComputedStyle(textarea);
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+
+    // Create measuring element
+    const measure = document.createElement("div");
+    measure.style.position = "absolute";
+    measure.style.visibility = "hidden";
+    measure.style.whiteSpace = "pre";
+    measure.style.font = computedStyle.font;
+    document.body.appendChild(measure);
+
+    // Calculate content width
+    const lines = value.split("\n");
+    let contentWidth = 0;
+
+    lines.forEach((line) => {
+      measure.textContent = line || " ";
+      contentWidth = Math.max(contentWidth, measure.offsetWidth);
+    });
+
+    document.body.removeChild(measure);
+
+    const padding = 32;
+    contentWidth += padding;
+
+    const minWidth = 200;
+    const maxWidth = window.innerWidth * 0.75;
+    const expandThreshold = currentWidth.current * 0.75;
+
+    // Determine new width
+    let newWidth = currentWidth.current;
+
+    if (contentWidth > expandThreshold) {
+      // Expand width gradually
+      newWidth = Math.min(contentWidth + 50, maxWidth);
+    } else if (contentWidth < expandThreshold * 0.5) {
+      // Shrink width gradually, but not below minimum
+      newWidth = Math.max(contentWidth + 50, minWidth);
+    }
+
+    // Update width if changed
+    if (newWidth !== currentWidth.current) {
+      currentWidth.current = newWidth;
+      textarea.style.width = `${newWidth}px`;
+      onWidthChange(newWidth);
+    }
+  }, [value, onWidthChange]);
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="px-2 py-1 bg-white border border-gray-200 rounded">
+        <div className="text-xs text-gray-600 mb-0.5">{label}</div>
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={handleChange}
+          className="text-sm focus:outline-none resize-none bg-transparent"
+          style={{
+            minHeight: "24px",
+            lineHeight: "1.25",
+            padding: "2px 0",
+            overflow: "hidden",
+            whiteSpace: "pre-wrap",
+            width: "200px", // Initial width
+          }}
+        />
       </div>
     </div>
   );

@@ -18,14 +18,12 @@ const createNodeConfig = (config) => ({
 export const BaseNode = ({ data, ...props }) => {
   const deleteNode = useStore((state) => state.deleteNode);
 
-
   const handleDelete = (event) => {
     event.preventDefault();
     event.stopPropagation();
     deleteNode(props.id);
   };
 
-  // Calculate handle positions dynamically based on total inputs/outputs
   const getHandlePosition = (index, total) => ((index + 1) * 100) / (total + 1);
 
   const dynamicHandlePositions = props.dynamicInputs.map((input, index) => {
@@ -40,9 +38,13 @@ export const BaseNode = ({ data, ...props }) => {
 
   return (
     <div
-      className={`bg-white rounded-lg border border-[#6466E9] shadow-[0_0_10px_rgba(100,102,233,0.25)] hover:shadow-[0_0_15px_rgba(100,102,233,0.35)] transition-shadow duration-200 ${props.className}`}
-      style={{ width: props.width }}
+      className={`bg-white rounded-lg border border-[#6466E9] shadow-[0_0_10px_rgba(100,102,233,0.25)] hover:shadow-[0_0_15px_rgba(100,102,233,0.35)] transition-all duration-200 ${props.className}`}
+      style={{
+        width: props.width,
+        maxWidth: `${window.innerWidth * 0.75}px`,
+      }}
     >
+      
       {props.inputs.map((input, index) => (
         <Handle
           key={`static-input-${input.id}`}

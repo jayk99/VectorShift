@@ -1,34 +1,49 @@
 import { useState } from "react";
 import { BaseNode, createNode } from "../components/BaseNode";
-import { NodeField } from "../components/NodeComponents";
+import { NodeField, NodeSelect } from "../components/NodeComponents";
 import { NODE_DIMENSIONS } from "../constants/constants";
 import { SiSlack, SiGmail, SiNotion, SiDiscord } from "react-icons/si";
+import { MdPerson } from "react-icons/md";
 
 // Slack Node
 const SLACK_NODE_CONFIG = createNode("slack", {
   width: NODE_DIMENSIONS.WIDE,
-  inputs: [{ id: "message", label: "message", position: 128 }],
-  outputs: [{ id: "response", label: "response", position: 128 }],
-  showSettings: true,
+  inputs: [
+    { id: "action_input", label: "action_input", position: 64 },
+    { id: "message", label: "message", position: 192 },
+  ],
 });
 
+const SLACK_ACTIONS = [{ value: "send_message", label: "Send Message" }];
+
 export const SlackNode = ({ id, data }) => {
-  const [webhook, setWebhook] = useState(data?.webhook || "");
+  const [action, setAction] = useState(data?.action || "send_message");
 
   return (
     <BaseNode
       id={id}
-      title="Slack Integration"
+      title="Slack"
       icon={SiSlack}
       {...SLACK_NODE_CONFIG}
       data={data}
     >
       <div className="flex flex-col gap-4 px-1">
-        <NodeField
-          label="Webhook URL"
-          value={webhook}
-          onChange={(e) => setWebhook(e.target.value)}
+        <NodeSelect
+          label="Action"
+          value={action}
+          onChange={(e) => setAction(e.target.value)}
+          options={SLACK_ACTIONS}
         />
+
+        <div className="bg-emerald-500 rounded-2xl px-3 py-2">
+          <div className="text-white/60 text-xs mb-1">Connected Account</div>
+          <div className="flex items-center gap-2">
+            <MdPerson className="w-4 h-4 text-white" />
+            <div className="text-white text-sm font-medium">
+              VectorShift Test
+            </div>
+          </div>
+        </div>
       </div>
     </BaseNode>
   );

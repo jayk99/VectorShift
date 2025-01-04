@@ -1,70 +1,165 @@
-# Getting Started with Create React App
+# VectorShift Technical Assessment
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Overview
 
-## Available Scripts
+This project implements a dynamic workflow builder for VectorShift's pipeline system. It enables users to create, customize, and validate automated AI workflows through an intuitive drag-and-drop interface.
 
-In the project directory, you can run:
+## Technical Assessment Tasks
 
-### `npm start`
+### 1. Node Abstraction System
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Created a flexible node abstraction system in `/frontend/src/nodes` that:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Implements a base node architecture for consistent styling and behavior
+- Reduces code duplication across node types
+- Enables rapid creation of new node types
+- Includes demonstration of 5 custom nodes showcasing the abstraction's flexibility
 
-### `npm test`
+### 2. UI/UX Enhancement
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Implemented comprehensive styling improvements:
 
-### `npm run build`
+- Unified design system across all components
+- Responsive and intuitive interface
+- Consistent visual hierarchy
+- Interactive animations and transitions
+- Accessibility considerations
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 3. Text Node Enhancement
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Advanced the Text node functionality with:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Dynamic node resizing based on content
+- Variable detection system using `{{variable}}` syntax
+- Automatic input handle creation for detected variables
+- Real-time handle updates
 
-### `npm run eject`
+### 4. Backend Integration
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Established frontend-backend communication:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Pipeline validation through `/pipelines/parse` endpoint
+- DAG (Directed Acyclic Graph) verification
+- Node and edge counting
+- User-friendly alert system for validation results
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Technology Stack
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- React.js
+- TailwindCSS
+- React Flow
+- FastAPI (Backend)
 
-## Learn More
+## Setup Instructions
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Install dependencies:
+   bash
+   cd frontend
+   npm install
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. Start development server:
 
-### Code Splitting
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+3. Start backend server (separate terminal):
 
-### Analyzing the Bundle Size
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: .\venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Project Structure
 
-### Making a Progressive Web App
+frontend/README.md
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+frontend/
+├── src/
+│ ├── components/ # Reusable UI components
+│ ├── nodes/ # Node implementations
+│ │ ├── inputNode.js
+│ │ ├── outputNode.js
+│ │ ├── llmNode.js
+│ │ └── textNode.js
+│ ├── constants/ # Configuration constants
+│ └── submit.js # Backend integration
+backend/
+├── main.py # FastAPI backend
+└── requirements.txt # Python dependencies
 
-### Advanced Configuration
+## Implementation Details
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Node Abstraction
 
-### Deployment
+- Base node component with shared functionality
+- Configurable input/output handles
+- Consistent styling and behavior
+- Easy extension for new node types
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Styling System
 
-### `npm run build` fails to minify
+- TailwindCSS for consistent design
+- Responsive layouts
+- Interactive states
+- Accessibility features
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Text Node Features
+
+- Content-based resizing
+- Variable detection regex: `{{\s*([a-zA-Z_]\w*)\s*}}`
+- Dynamic handle management
+- Real-time updates
+
+### Backend Integration
+
+```javascript
+// submit.js example
+const handleSubmit = async (nodes, edges) => {
+  const response = await fetch("/pipelines/parse", {
+    method: "POST",
+    body: JSON.stringify({ nodes, edges }),
+  });
+  const data = await response.json();
+  alert(
+    `Nodes: ${data.num_nodes}\nEdges: ${data.num_edges}\nIs DAG: ${data.is_dag}`
+  );
+};
+```
+
+## Testing
+
+- Run tests: `npm test`
+- Coverage report: `npm test -- --coverage`
+
+## Notes
+
+- This implementation focuses on maintainability and extensibility
+- Code follows React best practices and modern JavaScript conventions
+- Emphasis on user experience and visual consistency
+- Built with scalability in mind for future enhancements
+
+## Future Improvements
+
+- Additional node types
+- Enhanced variable handling
+- Advanced pipeline validation
+- More interactive feedback
+- Performance optimizations
+
+## Submission
+
+This project was completed as part of VectorShift's technical assessment, demonstrating proficiency in:
+
+- React component architecture
+- UI/UX design
+- State management
+- Backend integration
+- Code organization and documentation
+
+---
+
+For any questions or clarifications, please contact [Jayakrishna] at [jayakrishhna.v@gmail.com]

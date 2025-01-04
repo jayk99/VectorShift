@@ -7,57 +7,53 @@ import { EDGE_STYLES } from "./constants/constants";
 export const useStore = create((set, get) => ({
   nodes: [],
   edges: [],
+  nodeIDs: {},
+
+  // Generate unique IDs for new nodes
   getNodeID: (type) => {
-    const newIDs = { ...get().nodeIDs };
-    if (newIDs[type] === undefined) {
-      newIDs[type] = 0;
-    }
-    newIDs[type] += 1;
-    set({ nodeIDs: newIDs });
-    return `${type}-${newIDs[type]}`;
+    const currentIDs = { ...get().nodeIDs };
+    currentIDs[type] = (currentIDs[type] || 0) + 1;
+    set({ nodeIDs: currentIDs });
+    return `${type}-${currentIDs[type]}`;
   },
-  addNode: (node) => {
-    set({
-      nodes: [...get().nodes, node],
-    });
-  },
-  onNodesChange: (changes) => {
-    set({
-      nodes: applyNodeChanges(changes, get().nodes),
-    });
-  },
-  onEdgesChange: (changes) => {
-    set({
-      edges: applyEdgeChanges(changes, get().edges),
-    });
-  },
-  onConnect: (connection) => {
-    set({
-      edges: addEdge(
-        {
-          ...connection,
-          ...EDGE_STYLES.DEFAULT,
-        },
-        get().edges
-      ),
-    });
-  },
-  updateNodeField: (nodeId, fieldName, fieldValue) => {
-    set({
-      nodes: get().nodes.map((node) => {
-        if (node.id === nodeId) {
-          node.data = { ...node.data, [fieldName]: fieldValue };
-        }
-        return node;
-      }),
-    });
-  },
-  deleteNode: (nodeId) => {
-    set({
-      nodes: get().nodes.filter((node) => node.id !== nodeId),
-      edges: get().edges.filter(
+
+  // Node operations
+  addNode: (node) =>
+    set((state) => ({
+      nodes: [...state.nodes, node],
+    })),
+
+  deleteNode: (nodeId) =>
+    set((state) => ({
+      nodes: state.nodes.filter((node) => node.id !== nodeId),
+      edges: state.edges.filter(
         (edge) => edge.source !== nodeId && edge.target !== nodeId
       ),
-    });
-  },
+    })),
+
+  // Update specific node field
+  updateNodeField: (nodeId, field, value) =>
+    set((state) => ({
+      nodes: state.nodes.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, [field]: value } }
+          : node
+      ),
+    })),
+
+  // ReactFlow event handlers
+  onNodesChange: (changes) =>
+    set((state) => ({
+      nodes: applyNodeChanges(changes, state.nodes),
+    })),
+
+  onEdgesChange: (changes) =>
+    set((state) => ({
+      edges: applyEdgeChanges(changes, state.edges),
+    })),
+
+  onConnect: (connection) =>
+    set((state) => ({
+      edges: addEdge({ ...connection, ...EDGE_STYLES.DEFAULT }, state.edges),
+    })),
 }));

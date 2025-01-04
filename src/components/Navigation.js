@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { NAV_CATEGORIES } from "../constants/constants";
 import { useStore } from "../store";
-import {
-  MdOutlineRocketLaunch,
-  MdSave,
-  MdPlayArrow,
-  MdInfoOutline,
-  MdSearch,
-} from "react-icons/md";
+import { ImWrench } from "react-icons/im";
+import { IoIosSettings } from "react-icons/io";
+import { MdSave, MdPlayArrow, MdSearch } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { SaveSidebar } from "./SaveSidebar";
 
@@ -18,9 +14,9 @@ export const Navigation = ({ activeCategory, setActiveCategory }) => {
   const nodes = useStore((state) => state.nodes);
 
   const baseButtons = [
-    { icon: MdOutlineRocketLaunch, title: "Deploy" },
+    { icon: ImWrench, title: "Deploy" },
     { icon: MdPlayArrow, title: "Run" },
-    { icon: MdInfoOutline, title: "Details" },
+    { icon: IoIosSettings, title: "Details" },
   ];
 
   const saveButton = {

@@ -1,11 +1,10 @@
 import { useState, useCallback } from "react";
 import { BaseNode, createNode } from "../components/BaseNode";
-import { NodeField } from "../components/NodeComponents";
 import { MdOutlineTextSnippet } from "react-icons/md";
-import { NODE_DIMENSIONS } from "../constants/constants";
+import { DynamicTextArea } from "../components/NodeComponents";
 
 const TEXT_NODE_CONFIG = createNode("text", {
-  width: NODE_DIMENSIONS.WIDE,
+  width: 200,
   outputs: [{ id: "text", label: "text", position: 128 }],
   showSettings: false,
 });
@@ -13,20 +12,19 @@ const TEXT_NODE_CONFIG = createNode("text", {
 export const TextNode = ({ id, data }) => {
   const [text, setText] = useState(data?.text || "");
   const [variables, setVariables] = useState([]);
+  const [nodeWidth, setNodeWidth] = useState(TEXT_NODE_CONFIG.width);
 
-  const handleTextChange = useCallback(
-    (e) => {
-      setText(e.target.value);
-    },
-    [setText]
-  );
+  const handleTextChange = useCallback((e) => {
+    setText(e.target.value);
+  }, []);
 
-  const handleVariableDetected = useCallback(
-    (newVariables) => {
-      setVariables(newVariables);
-    },
-    [setVariables]
-  );
+  const handleVariableDetected = useCallback((newVariables) => {
+    setVariables(newVariables);
+  }, []);
+
+  const handleWidthChange = useCallback((newWidth) => {
+    setNodeWidth(newWidth);
+  }, []);
 
   return (
     <BaseNode
@@ -34,19 +32,17 @@ export const TextNode = ({ id, data }) => {
       title="Text"
       icon={MdOutlineTextSnippet}
       {...TEXT_NODE_CONFIG}
+      width={nodeWidth}
       dynamicInputs={variables}
       data={data}
     >
-      <div
-        className="flex flex-col gap-4 px-1 relative"
-        id={`node-${id}-content`}
-      >
-        <NodeField
+      <div className="flex flex-col gap-4 px-1">
+        <DynamicTextArea
           label="Text"
           value={text}
           onChange={handleTextChange}
           onVariableDetected={handleVariableDetected}
-          nodeId={id}
+          onWidthChange={handleWidthChange}
         />
       </div>
     </BaseNode>

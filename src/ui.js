@@ -17,7 +17,7 @@ import {
   GmailNode,
   NotionNode,
   DiscordNode,
-} from "./nodes/newNodes";
+} from "./nodes/IntegrationNodes";
 
 import "reactflow/dist/style.css";
 

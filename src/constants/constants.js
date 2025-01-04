@@ -143,9 +143,8 @@ export const MODEL_OPTIONS = [
 
 // Vector Store Options
 export const VECTOR_STORE_OPTIONS = [
-  { value: "pinecone", label: "Pinecone" },
-  { value: "qdrant", label: "Qdrant" },
-  { value: "weaviate", label: "Weaviate" },
+  { value: "vectorShiftDocs", label: "VectorShift Docs" },
+  
 ];
 
 // Input/Output Types
@@ -170,4 +169,4 @@ export const EDGE_STYLES = {
 };
 
 // Regular Expressions
-export const VARIABLE_REGEX = /{{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*}}/g;
+

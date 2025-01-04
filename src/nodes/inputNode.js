@@ -11,8 +11,14 @@ const INPUT_NODE_CONFIG = createNode("input", {
 });
 
 export const InputNode = ({ id, data }) => {
+ 
+  const getInputNumber = () => {
+    const match = id.match(/\d+$/);
+    return match ? `input_${match[0]}` : "input_1";
+  };
+
   const [state, setState] = useState({
-    inputName: data?.inputName || "project_id",
+    inputName: data?.inputName || getInputNumber(),
     inputType: data?.inputType || "Text",
   });
 

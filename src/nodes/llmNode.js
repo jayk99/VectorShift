@@ -8,10 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 // Standardized node configuration
 const LLM_NODE_CONFIG = createNode("llm", {
   width: NODE_DIMENSIONS.EXTRA_WIDE,
-  inputs: [
-    { id: "system", label: "system", position: 85 },
-    { id: "prompt", label: "prompt", position: 170 },
-  ],
+  inputs: [{ id: "system", label: "system", position: 85 }],
   outputs: [{ id: "response", label: "response", position: 128 }],
   showSettings: true,
 });
@@ -26,10 +23,16 @@ export const LLMNode = ({ id, data }) => {
   });
 
   const handleChange = useCallback(
-    (field) => (e) => {
-      const value =
-        e.target.type === "checkbox" ? e.target.checked : e.target.value;
-      setState((prev) => ({ ...prev, [field]: value }));
+    (field) => (value) => {
+      // Handle both direct values (from NodeSelect) and event objects
+      const newValue =
+        field === "usePersonalAPI"
+          ? value.target.checked
+          : value?.target
+          ? value.target.value
+          : value;
+
+      setState((prev) => ({ ...prev, [field]: newValue }));
     },
     []
   );
